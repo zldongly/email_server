@@ -1,0 +1,17 @@
+server:
+  kafka:
+    addrs:
+      - 192.168.124.40:9092
+
+data:
+  mongo:
+    uri: mongodb://192.168.124.40:27017
+    auth_source: test
+    username: testuser
+    password: 1234567
+
+mail:
+  username: hhh@163.com
+  password: XXXXXXXXXXXXXXXX
+  host: smtp.163.com
+  port: 465

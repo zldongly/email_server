@@ -13,3 +13,15 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+out/
+
+# IDE
+.idea/
+.vscode
+
+# os
+.DS_Store
+
+# docker volumes
+deploy/data/
