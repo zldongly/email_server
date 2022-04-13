@@ -13,7 +13,7 @@ type Record struct {
 	Id         primitive.ObjectID `bson:"_id,omitempty"`
 	SendTime   int64              `bson:"send_time"`
 	Receiver   []string           `bson:"receiver"`
-	TemplateId string             `json:"template_id"`
+	TemplateId string             `bson:"template_id"`
 	Name       string             `bson:"name"`
 	Content    string             `bson:"content"`
 	IsSuccess  int8               `bson:"is_success"`
