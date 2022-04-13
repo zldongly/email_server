@@ -18,18 +18,18 @@ import (
 
 // Injectors from wire.go:
 
-func initServer(cm *conf.Mail, log *zap.SugaredLogger) (app.Server, func(), error) {
-	client := server.NewKafkaClient(log)
-	mongoClient := data.NewMongo(log)
-	dataData, cleanup, err := data.NewData(mongoClient, log)
+func initServer(confServer *conf.Server, mail *conf.Mail, confData *conf.Data, sugaredLogger *zap.SugaredLogger) (app.Server, func(), error) {
+	client := server.NewKafkaClient(confServer, sugaredLogger)
+	mongoClient := data.NewMongo(confData, sugaredLogger)
+	dataData, cleanup, err := data.NewData(mongoClient, sugaredLogger)
 	if err != nil {
 		return nil, nil, err
 	}
-	emailRepo := data.NewJobRepo(dataData, log)
-	mailCase := service.NewMailCase(cm, log)
-	emailUseCase := service.NewEmailUseCase(emailRepo, mailCase, log)
-	apiApi := api.NewJob(emailUseCase, log)
-	appServer := server.NewServer(client, apiApi, log)
+	emailRepo := data.NewJobRepo(dataData, sugaredLogger)
+	mailCase := service.NewMailCase(mail, sugaredLogger)
+	emailUseCase := service.NewEmailUseCase(emailRepo, mailCase, sugaredLogger)
+	job := api.NewJob(emailUseCase, sugaredLogger)
+	appServer := server.NewServer(client, job, sugaredLogger)
 	return appServer, func() {
 		cleanup()
 	}, nil

@@ -11,6 +11,7 @@ import (
 	"log"
 	"time"
 )
+
 var (
 	_name     = "email.job"
 	_version  = "1.0.0"
