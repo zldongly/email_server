@@ -26,7 +26,9 @@ func initServer(confServer *conf.Server, confData *conf.Data, sugaredLogger *zap
 	}
 	templateRepo := data.NewTemplateRepo(dataData, sugaredLogger)
 	templateUseCase := service.NewTempleCase(templateRepo, sugaredLogger)
-	admin, err := api.NewAdmin(sugaredLogger, templateUseCase)
+	recordRepo := data.NewRecordRepo(dataData, sugaredLogger)
+	recordUseCase := service.NewRecordUseCase(recordRepo, sugaredLogger)
+	admin, err := api.NewAdmin(sugaredLogger, templateUseCase, recordUseCase)
 	if err != nil {
 		cleanup()
 		return nil, nil, err

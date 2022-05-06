@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var ProviderSet = wire.NewSet(NewTemplateRepo, NewData, NewMongo)
+var ProviderSet = wire.NewSet(NewTemplateRepo, NewRecordRepo, NewData, NewMongo)
 
 type Data struct {
 	db  *mongo.Client
