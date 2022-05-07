@@ -67,7 +67,7 @@ func (r *recordRepo) ListRecord(ctx context.Context, templateId, name string, is
 			&service.Record{
 				Id:         hex.EncodeToString(re.Id[:]),
 				SendTime:   re.SendTime,
-				Receivers:  re.Receiver,
+				Receivers:  re.Receivers,
 				TemplateId: re.TemplateId,
 				Name:       re.Name,
 				Content:    re.Content,
@@ -82,7 +82,7 @@ func (r *recordRepo) ListRecord(ctx context.Context, templateId, name string, is
 type Record struct {
 	Id         primitive.ObjectID `bson:"_id,omitempty"`
 	SendTime   int64              `bson:"send_time"`
-	Receiver   []string           `bson:"receiver"`
+	Receivers  []string           `bson:"receivers"`
 	TemplateId string             `bson:"template_id"`
 	Name       string             `bson:"name"`
 	Content    string             `bson:"content"`

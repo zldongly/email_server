@@ -12,7 +12,7 @@ import (
 type Record struct {
 	Id         primitive.ObjectID `bson:"_id,omitempty"`
 	SendTime   int64              `bson:"send_time"`
-	Receiver   []string           `bson:"receiver"`
+	Receivers  []string           `bson:"receivers"`
 	TemplateId string             `bson:"template_id"`
 	Name       string             `bson:"name"`
 	Content    string             `bson:"content"`
@@ -27,7 +27,7 @@ func (r *Record) TableName() string {
 func (r *jobRepo) CreateRecord(ctx context.Context, record *service.Record) (*service.Record, error) {
 	re := &Record{
 		SendTime:   record.SendTime,
-		Receiver:   record.Receivers,
+		Receivers:  record.Receivers,
 		TemplateId: record.TemplateId,
 		Name:       record.Name,
 		Content:    record.Content,
