@@ -22,24 +22,15 @@ func NewTemplateRepo(data *Data, log *zap.SugaredLogger) service.TemplateRepo {
 	}
 }
 
-type Template struct {
-	Id      primitive.ObjectID `bson:"_id,omitempty"`
-	Name    string             `bson:"name"`
-	Subject string             `bson:"subject"`
-	Content string             `bson:"content"`
-}
-
-func (t *Template) TableName() string {
-	return "template"
-}
-
 func (r *templateRepo) CreateTemplate(ctx context.Context, t *service.Template) (*service.Template, error) {
-	temp := Template{
-		Name:    t.Name,
-		Subject: t.Subject,
-		Content: t.Content,
-	}
-	col := r.data.db.Database("test").Collection(temp.TableName())
+	var (
+		temp = &Template{
+			Name:    t.Name,
+			Subject: t.Subject,
+			Content: t.Content,
+		}
+		col = r.data.db.Database(temp.Database()).Collection(temp.TableName())
+	)
 
 	res, err := col.InsertOne(ctx, temp)
 	if err != nil {
@@ -54,4 +45,19 @@ func (r *templateRepo) CreateTemplate(ctx context.Context, t *service.Template) 
 
 	t.Id = hex.EncodeToString(temp.Id[:])
 	return t, nil
+}
+
+type Template struct {
+	Id      primitive.ObjectID `bson:"_id,omitempty"`
+	Name    string             `bson:"name"`
+	Subject string             `bson:"subject"`
+	Content string             `bson:"content"`
+}
+
+func (t *Template) TableName() string {
+	return "template"
+}
+
+func (t *Template) Database() string {
+	return "test"
 }

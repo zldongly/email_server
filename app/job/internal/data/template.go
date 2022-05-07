@@ -10,21 +10,10 @@ import (
 	"net/http"
 )
 
-type Template struct {
-	Id      primitive.ObjectID `bson:"_id,omitempty"`
-	Name    string             `bson:"name"`
-	Subject string             `bson:"subject"`
-	Content string             `bson:"content"`
-}
-
-func (t *Template) TableName() string {
-	return "template"
-}
-
 func (r *jobRepo) GetTemplate(ctx context.Context, id string) (*service.Template, error) {
 	var (
-		t     Template
-		col   = r.data.db.Database("test").Collection(t.TableName())
+		t     = new(Template)
+		col   = r.data.db.Database(t.Database()).Collection(t.TableName())
 		objId primitive.ObjectID
 	)
 
@@ -36,7 +25,7 @@ func (r *jobRepo) GetTemplate(ctx context.Context, id string) (*service.Template
 
 	copy(objId[:], bs)
 
-	err = col.FindOne(ctx, &bson.D{{"_id", objId}}).Decode(&t)
+	err = col.FindOne(ctx, &bson.D{{"_id", objId}}).Decode(t)
 	if err != nil {
 		err = errors.WithCode(errors.WithStack(err), http.StatusInternalServerError, "decode mongo result")
 		return nil, err
@@ -48,4 +37,19 @@ func (r *jobRepo) GetTemplate(ctx context.Context, id string) (*service.Template
 		Subject: t.Subject,
 		Content: t.Content,
 	}, nil
+}
+
+type Template struct {
+	Id      primitive.ObjectID `bson:"_id,omitempty"`
+	Name    string             `bson:"name"`
+	Subject string             `bson:"subject"`
+	Content string             `bson:"content"`
+}
+
+func (t *Template) TableName() string {
+	return "template"
+}
+
+func (t *Template) Database() string {
+	return "test"
 }

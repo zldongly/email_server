@@ -26,7 +26,8 @@ type recordRepo struct {
 
 func (r *recordRepo) ListRecord(ctx context.Context, templateId, name string, isSuccess *int, pageNum, pageSize int) ([]*service.Record, error) {
 	var (
-		col     = r.data.db.Database("test").Collection(new(Record).TableName())
+		do      = new(Record)
+		col     = r.data.db.Database(do.Database()).Collection(do.TableName())
 		filter  = make(bson.M, 2)
 		records = make([]*Record, 0, pageSize)
 		opt     = options.Find()
@@ -92,4 +93,8 @@ type Record struct {
 
 func (r *Record) TableName() string {
 	return "record"
+}
+
+func (r *Record) Database() string {
+	return "test"
 }
