@@ -2,18 +2,14 @@ package service
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
-	"github.com/zldongly/email_server/app/job/internal/conf"
 	"github.com/zldongly/email_server/pkg/errors"
 	"go.uber.org/zap"
-	"gopkg.in/gomail.v2"
-	"net/http"
 	"strings"
 	"time"
 )
 
-type EmailRepo interface {
+type MessageRepo interface {
 	CreateRecord(ctx context.Context, r *Record) (*Record, error)
 	GetTemplate(ctx context.Context, id string) (*Template, error)
 }
@@ -42,22 +38,26 @@ type Mail struct {
 	Param      map[string]string
 }
 
-func NewEmailUseCase(repo EmailRepo, mc *MailCase, log *zap.SugaredLogger) *EmailUseCase {
-	return &EmailUseCase{
+type Sender interface {
+	Send(receivers []string, subject, content string) error
+}
+
+func NewMessageUseCase(repo MessageRepo, s Sender, log *zap.SugaredLogger) *MessageUseCase {
+	return &MessageUseCase{
 		repo: repo,
 		log:  log.With("module", "service"),
-		mc:   mc,
+		s:   s,
 	}
 }
 
-type EmailUseCase struct {
-	repo EmailRepo
+type MessageUseCase struct {
+	repo MessageRepo
 	log  *zap.SugaredLogger
 
-	mc *MailCase
+	s Sender
 }
 
-func (c *EmailUseCase) SendMail(ctx context.Context, m *Mail) error {
+func (c *MessageUseCase) SendMail(ctx context.Context, m *Mail) error {
 	t, err := c.repo.GetTemplate(ctx, m.TemplateId)
 	if err != nil {
 		return err
@@ -71,7 +71,7 @@ func (c *EmailUseCase) SendMail(ctx context.Context, m *Mail) error {
 		return err
 	}
 
-	err = c.mc.send(m.Receivers, subject, content)
+	err = c.s.Send(m.Receivers, subject, content)
 
 	record := &Record{
 		SendTime:   time.Now().Unix(),
@@ -106,38 +106,4 @@ func (t *Template) parse(m *Mail) (string, string, error) {
 	}
 
 	return subject, content, nil
-}
-
-func NewMailCase(cfg *conf.Mail, log *zap.SugaredLogger) *MailCase {
-	log = log.With("module", "service/gomail")
-	d := gomail.NewDialer(cfg.Host, cfg.Port, cfg.Username, cfg.Password)
-	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-
-	sc, err := d.Dial()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return &MailCase{
-		client: sc,
-		cfg:    cfg,
-	}
-}
-
-type MailCase struct {
-	client gomail.SendCloser
-	cfg    *conf.Mail
-}
-
-func (m *MailCase) send(receivers []string, subject, content string) error {
-	msg := gomail.NewMessage()
-	msg.SetHeader("Subject", subject)
-	msg.SetBody("text/html", content)
-
-	if err := m.client.Send(m.cfg.Username, receivers, msg); err != nil {
-		err = errors.WithCode(errors.WithStack(err), http.StatusInternalServerError, "mail send")
-		return err
-	}
-
-	return nil
 }

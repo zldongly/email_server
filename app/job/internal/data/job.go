@@ -10,7 +10,7 @@ type jobRepo struct {
 	log  *zap.SugaredLogger
 }
 
-func NewJobRepo(data *Data, log *zap.SugaredLogger) service.EmailRepo {
+func NewJobRepo(data *Data, log *zap.SugaredLogger) service.MessageRepo {
 	log = log.With("module", "data/jobRepo")
 	return &jobRepo{
 		data: data,

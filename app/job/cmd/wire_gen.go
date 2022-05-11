@@ -25,10 +25,10 @@ func initServer(confServer *conf.Server, mail *conf.Mail, confData *conf.Data, s
 	if err != nil {
 		return nil, nil, err
 	}
-	emailRepo := data.NewJobRepo(dataData, sugaredLogger)
-	mailCase := service.NewMailCase(mail, sugaredLogger)
-	emailUseCase := service.NewEmailUseCase(emailRepo, mailCase, sugaredLogger)
-	job := api.NewJob(emailUseCase, sugaredLogger)
+	messageRepo := data.NewJobRepo(dataData, sugaredLogger)
+	sender := service.NewMailUseCase(mail, sugaredLogger)
+	messageUseCase := service.NewMessageUseCase(messageRepo, sender, sugaredLogger)
+	job := api.NewJob(messageUseCase, sugaredLogger)
 	appServer := server.NewServer(client, job, sugaredLogger)
 	return appServer, func() {
 		cleanup()

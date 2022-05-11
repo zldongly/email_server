@@ -20,7 +20,7 @@ type Email struct {
 	Param      map[string]string `json:"param"`
 }
 
-func NewJob(uc *service.EmailUseCase, log *zap.SugaredLogger) Job {
+func NewJob(uc *service.MessageUseCase, log *zap.SugaredLogger) Job {
 	return &instance{
 		log: log.With("module", "api"),
 		uc:  uc,
@@ -29,7 +29,7 @@ func NewJob(uc *service.EmailUseCase, log *zap.SugaredLogger) Job {
 
 type instance struct {
 	log *zap.SugaredLogger
-	uc  *service.EmailUseCase
+	uc  *service.MessageUseCase
 }
 
 func (i *instance) SendEmail(ctx context.Context, e *Email) error {
