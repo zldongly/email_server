@@ -4,7 +4,7 @@ server:
 
 data:
   mongo:
-    uri: mongodb://192.168.124.40:27017
+    uri: mongodb://127.0.0.1:27017
     auth_source: test
     username: testuser
     password: 1234567

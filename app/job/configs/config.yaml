@@ -1,11 +1,11 @@
 server:
   kafka:
     addrs:
-      - 192.168.124.40:9092
+      - 127.0.0.1:9092
 
 data:
   mongo:
-    uri: mongodb://192.168.124.40:27017
+    uri: mongodb://127.0.0.1:27017
     auth_source: test
     username: testuser
     password: 1234567
