@@ -37,6 +37,19 @@ func NewServer(cfg *conf.Server, i api.Admin, log *zap.SugaredLogger) app.Server
 		web.ResponseHttp(c, reply, err)
 	})
 
+	r.GET("/template/list", func(c *gin.Context) {
+		var req api.ListTemplateReq
+		if err := c.ShouldBind(&req); err != nil {
+			log.Warn(err)
+			err = errors.WithCode(err, http.StatusBadRequest, "参数解析错误")
+			web.ResponseHttp(c, nil, err)
+			return
+		}
+
+		reply, err := i.ListTemplate(c, &req)
+		web.ResponseHttp(c, reply, err)
+	})
+
 	r.GET("/record/list", func(c *gin.Context) {
 		var req api.ListRecordReq
 		if err := c.ShouldBind(&req); err != nil {
